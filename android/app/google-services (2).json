@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "938170048719",
+    "firebase_url": "https://qbooking-878d8.firebaseio.com",
+    "project_id": "qbooking-878d8",
+    "storage_bucket": "qbooking-878d8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:938170048719:android:e53cb145fc11762c9417ba",
+        "android_client_info": {
+          "package_name": "com.masa.book_it_provider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "938170048719-n7scrfh93agv9luh3lg5kfmph393b5e7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCPJM0jzx5LOonA-d6hbdA1UeBDGHp59M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "938170048719-n7scrfh93agv9luh3lg5kfmph393b5e7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:938170048719:android:e4cf4a70f61ac5259417ba",
+        "android_client_info": {
+          "package_name": "com.masa.bookit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "938170048719-n7scrfh93agv9luh3lg5kfmph393b5e7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCPJM0jzx5LOonA-d6hbdA1UeBDGHp59M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "938170048719-n7scrfh93agv9luh3lg5kfmph393b5e7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
