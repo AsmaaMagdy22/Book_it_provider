@@ -1,11 +1,11 @@
-import 'package:book_it_provider/screens/home/providerEdit.dart';
-import 'package:book_it_provider/screens/home/providerView.dart';
+import 'package:book_it_provider/viewmodels/home_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'customerList.dart';
+import 'package:provider_architecture/viewmodel_provider.dart';
 
 class HomePage extends StatefulWidget {
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -28,21 +28,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   String _ownerName = "محمد الونش";
-  List users;
 
-  @override
-  void initState() {
-    super.initState();
-    users = new List();
-    setState(() {
-      users.add('كشري الونش');
-      users.add('حلويات الونش');
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ViewModelProvider<HomeViewModel>.withConsumer(
+    viewModel: HomeViewModel(),
+    onModelReady: (model) => model.listenToPosts(),
+    builder: (context, model, child) => Scaffold(
       resizeToAvoidBottomPadding: true,
       body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -93,10 +86,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Padding(padding: EdgeInsets.all(10)),
                 Expanded(
-                  child: new ListView.builder(
-                      itemCount: users.length,
-                      padding: EdgeInsets.all(8),
-                      itemBuilder: (context, position) {
+                  child: model.posts != null
+                      ? ListView.builder(
+                      itemCount: model.posts.length,
+                      itemBuilder: (context, index) {
                         return new Container(
                           child: new Slidable(
                             delegate: new SlidableBehindDelegate(),
@@ -108,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                               elevation: 15,
                               child: ExpansionTile(
                                 title: Text(
-                                  '${users[position]}',
+                                  '${model.posts[index].name }',
                                   textDirection: TextDirection.rtl,
                                   style: TextStyle(
                                       fontSize: 18,
@@ -136,12 +129,7 @@ class _HomePageState extends State<HomePage> {
                                           width: 5,
                                         ),
                                         InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => ProviderView()),
-                                              );
-                                            },
+                                            onTap: () => model.editPost(index),
                                             child: Text(
                                               'عن النشاط',
                                               style: TextStyle(
@@ -157,12 +145,7 @@ class _HomePageState extends State<HomePage> {
                                           width: 5,
                                         ),
                                         InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => Customers()),
-                                              );
-                                            },
+                                            onTap: model.navigateToCustomerseView,
                                             child: Text(
                                               'طابور الخدمة',
                                               style: TextStyle(
@@ -186,12 +169,18 @@ class _HomePageState extends State<HomePage> {
                                       size: 30,
                                       color: Color(0xff35D7F1),
                                     ),
-                                    onPressed: () {}),
+                                    onPressed: () => model.deletePost(index),
                               ),
-                            ],
+                              )  ],
                           ),
                         );
-                      }),
+                      })
+                      : Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(
+                          Theme.of(context).primaryColor),
+                    ),
+                  )
                 ),
               ],
             ),
@@ -220,16 +209,10 @@ class _HomePageState extends State<HomePage> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProviderEdit(),
-            )
-          );
-        },
+        onPressed: model.navigateToCreateView,
         child: Icon(Icons.add),
         backgroundColor: Color(0xff35D7F1),
       ),
-    );
+    ));
   }
 }

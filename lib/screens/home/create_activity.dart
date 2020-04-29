@@ -1,31 +1,46 @@
 import 'dart:io';
+import 'package:book_it_provider/models/activity.dart';
+import 'package:book_it_provider/viewmodels/create_post_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-//import 'package:Provider/screens/home/mainUi.dart';
+import 'package:provider_architecture/viewmodel_provider.dart';
+//import 'package:Provider/screens/home/home.dart';
 
 int _selectedIndex;
 
-class ProviderEdit extends StatefulWidget {
+class CreatActivity extends StatefulWidget  {
+  final Activity edittingPost;
+  CreatActivity ({Key key, this.edittingPost}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
-    return ProviderEditState();
+    return CreatActivityState(edittingPost);
   }
 }
+  class CreatActivityState extends State<CreatActivity> {
+    Activity edittingPost;
+    CreatActivityState(this.edittingPost);
 
-class ProviderEditState extends State<ProviderEdit> {
-
+    final nameController = TextEditingController();
+    final ownerController = TextEditingController();
+    final aboutController = TextEditingController();
+    final locationController = TextEditingController();
+    final numberController = TextEditingController();
+    final linkController = TextEditingController();
+    final categoryController = TextEditingController();
 
 
   List<String> _days = ['ج', 'خ', 'ع', 'ث', 'ن', ' ح', 'س'];
   File _image;
   String _businessName = "إسم النشاط";
-  TextEditingController businessNameController = new TextEditingController();
   String _dropValue = 'صالون حلاقة';
   String _day = '';
   TimeOfDay _time = TimeOfDay.now();
   String _pickedTime1 = '';
   String _pickedTime2 = '';
+
+  TextEditingController businessNameController = new TextEditingController();
+
 
   Widget _buildDay(int index) {
     return InkWell(
@@ -62,7 +77,22 @@ class ProviderEditState extends State<ProviderEdit> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ViewModelProvider<CreatePostViewModel>.withConsumer(
+    viewModel: CreatePostViewModel(),
+    onModelReady: (model) {
+      model.setEdittingPost(edittingPost);
+
+      // update the text in the controller
+    nameController.text = edittingPost?.name ?? '';
+    ownerController.text = edittingPost?.owner ?? '';
+    aboutController.text = edittingPost?.about ?? '';
+    linkController.text = edittingPost?.link ?? '';
+    locationController.text = edittingPost?.location ?? '';
+    numberController.text= edittingPost?.number ?? '';
+    categoryController.text = edittingPost?.cataegory ?? '';
+
+    },
+    builder: (context, model, child) => Scaffold(
       resizeToAvoidBottomPadding: true,
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -107,20 +137,14 @@ class ProviderEditState extends State<ProviderEdit> {
                       child: Opacity(
                         opacity: 0.5,
                         child: RaisedButton(
-                          onPressed: () => addPhoto(),
-                          child: _image == null
+                          onPressed: () => model.selectImage(),
+                          child: model.selectedImage == null
                               ? Text(
-                                  'اضافة صورة',
-                                  style: TextStyle(
-                                      color: Color(0xff333E4A),
-                                      fontFamily: 'font'),
-                                )
-                              : Text(
-                                  'تغيير الصورة',
-                                  style: TextStyle(
-                                      color: Color(0xff333E4A),
-                                      fontFamily: 'font'),
-                                ),
+                            'اضافة صورة',
+                            style: TextStyle(color: Colors.grey[400]),
+                          )
+                          // If we have a selected image we want to show it
+                              : Image.file(model.selectedImage),
                         ),
                       ),
                     ),
@@ -166,11 +190,11 @@ class ProviderEditState extends State<ProviderEdit> {
                         );
                       }).toList(),
                       underline: SizedBox(),
-                      onChanged: (String newValue) {
+                     /* onChanged: (String newValue) {
                         setState(() {
                           _dropValue = newValue;
                         });
-                      },
+                      },*/
                       value: _dropValue,
                       icon: Icon(
                         Icons.arrow_drop_down_circle,
@@ -188,7 +212,8 @@ class ProviderEditState extends State<ProviderEdit> {
                     child: TextField(
                       style: TextStyle(fontSize: 16),
                       textDirection: TextDirection.rtl,
-                      //controller: ,
+                      controller: ownerController,
+
                       decoration: InputDecoration(
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xff35D7F1)),
@@ -211,12 +236,12 @@ class ProviderEditState extends State<ProviderEdit> {
                     child: TextField(
                       style: TextStyle(fontSize: 16),
                       textDirection: TextDirection.rtl,
-                      onChanged: (_) {
+                     /* onChanged: (_) {
                         setState(() {
                           _businessName = businessNameController.text;
                         });
-                      },
-                      controller: businessNameController,
+                      },*/
+                      controller: nameController,
                       decoration: InputDecoration(
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xff35D7F1)),
@@ -239,7 +264,7 @@ class ProviderEditState extends State<ProviderEdit> {
                     child: TextField(
                       style: TextStyle(fontSize: 16),
                       textDirection: TextDirection.rtl,
-                      //controller: ,
+                      controller: aboutController,
                       decoration: InputDecoration(
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xff35D7F1)),
@@ -261,7 +286,8 @@ class ProviderEditState extends State<ProviderEdit> {
                     child: TextField(
                       style: TextStyle(fontSize: 16),
                       textDirection: TextDirection.rtl,
-                      //controller: ,
+                      controller: locationController,
+
                       decoration: InputDecoration(
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Color(0xff35D7F1)),
@@ -282,7 +308,8 @@ class ProviderEditState extends State<ProviderEdit> {
                     padding: EdgeInsets.only(left: 20, right: 20),
                     child: TextField(
                       textDirection: TextDirection.rtl,
-                      //controller: ,
+                      controller: numberController,
+
                       keyboardType: TextInputType.phone,
                       style: TextStyle(fontSize: 16),
                       decoration: InputDecoration(
@@ -305,7 +332,7 @@ class ProviderEditState extends State<ProviderEdit> {
                     padding: EdgeInsets.only(left: 20, right: 20),
                     child: TextField(
                       textDirection: TextDirection.rtl,
-                      //controller: ,
+                      controller: linkController,
                       style: TextStyle(fontSize: 16),
                       decoration: InputDecoration(
                         focusedBorder: UnderlineInputBorder(
@@ -423,14 +450,18 @@ class ProviderEditState extends State<ProviderEdit> {
                 InkWell(
                   borderRadius: BorderRadius.circular(30),
                   onTap: () {if(businessNameController.text!=null){
-                    setState(() {
+                  /*  setState(() {
                       //users.add('${businessNameController.text}');
-                    });
+                    });*/
                   }
                   },
                   child: InkWell(
                     onTap: (){
-                      Navigator.of(context).pushNamed('/MainUi');
+                      if (!model.busy) {
+                        model.addPost(name: nameController.text,link: linkController.text , number: numberController.text, location:  locationController.text, owner: ownerController.text , about: aboutController.text);
+
+
+                      }
                     },
                     child: Container(
                       height: 50,
@@ -468,30 +499,30 @@ class ProviderEditState extends State<ProviderEdit> {
 //
 //          BottomNavigationBarItem(
 //            icon: Icon(Icons.chat_bubble_outline,size: 30,),
-//            title: SizedBox.shrink(),
+//            name: SizedBox.shrink(),
 //          ),
 //          BottomNavigationBarItem(
 //            icon: Icon(Icons.home,size: 30),
-//            title: SizedBox.shrink(),
+//            name: SizedBox.shrink(),
 //          ),
 //          BottomNavigationBarItem(
 //            icon: Icon(Icons.settings,size: 30),
-//            title: SizedBox.shrink(),
+//            name: SizedBox.shrink(),
 //          ),
 //        ],
 //        currentIndex: 1,
 //        selectedItemColor:Color(0xff35D7F1) ,
 //        onTap: (_){},
 //      ),
-    );
+    ));
   }
 
-  Future addPhoto() async {
+ /* Future addPhoto() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
       _image = image;
     });
-  }
+  }*/
 
   setDay(int value) {
     setState(() {

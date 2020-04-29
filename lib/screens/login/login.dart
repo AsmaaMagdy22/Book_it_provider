@@ -1,5 +1,4 @@
-import 'package:book_it_provider/service/auth_service.dart';
-import 'package:book_it_provider/widgets/loading.dart';
+import 'package:book_it_provider/viewmodels/login_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -7,24 +6,16 @@ import 'package:book_it_provider/widgets/custom_textfield.dart';
 import 'package:book_it_provider/widgets/circular_button.dart';
 import 'package:book_it_provider/widgets/custom_button.dart';
 import 'package:book_it_provider/ui/apptheme.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider_architecture/viewmodel_provider.dart';
 
+class LoginPage extends StatelessWidget {
+ // final Function toggleView;
+ // LoginPage({this.toggleView});
 
-TextEditingController emailController = new TextEditingController();
-TextEditingController passwordController = new TextEditingController();
+  TextEditingController emailController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
 
-class LoginPage extends StatefulWidget {
-  final Function toggleView;
-  LoginPage({this.toggleView});
-
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-
-  final GoogleSignIn _googlSignIn = new GoogleSignIn();
-  final AuthService _auth = AuthService();
+ // final GoogleSignIn _googlSignIn = new GoogleSignIn();
   final _formKey = GlobalKey<FormState>();
   String error = '';
   bool loading = false;
@@ -33,12 +24,11 @@ class _LoginPageState extends State<LoginPage> {
   String email = '';
   String password = '';
 
-
   @override
   Widget build(BuildContext context) {
-    return loading
-        ? Loading()
-        : Scaffold(
+    return ViewModelProvider<LoginViewModel>.withConsumer(
+        viewModel: LoginViewModel(),
+        builder: (context, model, child) => Scaffold(
             resizeToAvoidBottomPadding: false,
             body: Container(
               padding: EdgeInsets.only(right: 32, left: 32),
@@ -88,9 +78,6 @@ class _LoginPageState extends State<LoginPage> {
                               color3: darkBlue,
                               validator: (val) =>
                                   val.isEmpty ? 'Enter an email' : null,
-                              change: (val) {
-                                setState(() => email = val);
-                              },
                             ),
                             Padding(padding: EdgeInsets.only(bottom: 12)),
                             Row(
@@ -146,19 +133,11 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               CustomButton(
-                                onTap: () async {
-                                  if (_formKey.currentState.validate()) {
-                                    setState(() => loading = true);
-                                    dynamic result = await _auth
-                                        .signInWithEmailAndPassword(
-                                            email, password);
-                                    if (result == null) {
-                                      setState(() {
-                                        loading = false;
-                                        error = 'Please supply a valid email';
-                                      });
-                                    }
-                                  }
+                                onTap: () {
+                                  model.login(
+                                    email: emailController.text,
+                                    password: passwordController.text,
+                                  );
                                 },
                                 name: 'الدخول',
                                 color: awesome,
@@ -166,7 +145,9 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               CustomButton(
                                 name: 'انشاء حساب جديد',
-                                onTap: () => widget.toggleView(),
+                                onTap: () {
+                                  model.navigateToSignUp();
+                                },
                                 color: grey1,
                                 color3: darkBlue,
                                 color2: darkBlue,
@@ -177,6 +158,6 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
-            ));
+            )));
   }
 }
